@@ -2,7 +2,17 @@
 
 #include <stdbool.h>
 
-typedef void* Element;
+struct Music {
+    char* nom;
+    char* artiste;
+    char* album;
+    char* genre;
+    int numeroDisque;
+    int numeroPiste;
+    int annee;
+}
+
+typedef Music Element;
 
 struct cellule_s {
     Element val;
