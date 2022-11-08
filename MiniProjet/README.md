@@ -1,4 +1,7 @@
 # MiniProjet
+
+OLD git : https://github.com/josh-bgd/MiniProjet
+
 # Description du projet
 - Ajout de certaines règles au jeu du Snake, un jeu que j'apprécie énormément.
 # Quelles modifications ?
