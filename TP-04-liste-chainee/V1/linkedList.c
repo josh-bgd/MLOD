@@ -44,7 +44,7 @@ void afficheListe_i(Liste l) {
     Liste p= l;
 
     while (!estVide(p)){
-        afficheElement(l->val);
+        afficheElement(p->val);
         p = p->suiv;
     }
     printf("\n");
