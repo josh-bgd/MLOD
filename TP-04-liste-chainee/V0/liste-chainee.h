@@ -5,8 +5,8 @@
 typedef int Element;
 
 struct cellule_s {
-	Element val;
-	struct cellule_s* suiv;
+    Element val;
+    struct cellule_s* suiv;
 };
 
 typedef struct cellule_s Cellule;
@@ -33,6 +33,8 @@ void afficheListe_i(Liste l);
 
 // version recursive
 void afficheListe_r(Liste l);
+
+bool equalsElement(Element e1, Element e2);
 
 void detruireElement(Element e);
 
@@ -67,3 +69,4 @@ Liste retirePremier_r(Element v, Liste l);
 
 
 void afficheEnvers_r(Liste l);
+
