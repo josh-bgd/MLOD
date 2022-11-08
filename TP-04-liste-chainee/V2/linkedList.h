@@ -10,9 +10,9 @@ struct Music {
     int numeroDisque;
     int numeroPiste;
     int annee;
-}
+};
 
-typedef Music Element;
+typedef struct Music Element;
 
 struct cellule_s {
     Element val;
