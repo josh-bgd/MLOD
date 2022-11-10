@@ -1,25 +1,17 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-struct Music {
-    char* nom;
-    char* artiste;
-    char* album;
-    char* genre;
-    int numeroDisque;
-    int numeroPiste;
-    int annee;
-};
+typedef void* Element;
 
-typedef struct Music Element;
-
-struct cellule_s {
+typedef struct Cellule_s {
     Element val;
-    struct cellule_s* suiv;
-};
+    struct Cellule_s* suiv;
+} Cellule_S;
 
-typedef struct cellule_s Cellule;
+typedef Cellule_S Cellule;
 
 typedef Cellule* Liste;
 

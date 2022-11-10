@@ -1,39 +1,22 @@
-//gcc -W -Wall -std=c99 linkedList.c linkedListOfMusic.c -o linkedListOfMusic
-//  linkedListOfString.c
-//  TP_liste-chainee
-//
-//  Created by Josua  on 08/11/2022.
-//
+#pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "linkedList.h"
+#define BUFFER_SIZE 500
 
+typedef struct Music_s {
+    char* nom;
+    char* artiste;
+    char* album;
+    char* genre;
+    int numeroDisque;
+    int numeroPiste;
+    int annee;
+} Music_s;
 
-void afficheElement(Element e){
-    printf("%s ",(char *) e);
-}
+typedef Music_s* Music;
 
-void detruireElement(Element e) {
-    //free(e);
-}
+Music creerMusic(char* nom, char* artiste, char* album, char* genre, int numeroDisque, int numeroPiste, int annee);
 
-bool equalsElement(Element e1, Element e2){
-    return strcmp (e1,e2) == 0 ;
-}
+Liste lireMusic(char* fileName);
 
-int main(void){
-    Liste l;
-
-    l = NULL;
-    printf("estVide(l) = %s\n",estVide(l)?"TRUE":"FALSE");
-    
-    l = ajoutTete("Monsieur",l);
-    afficheListe_i(l);
-    
-    l = ajoutTete("Josua",l);
-    afficheListe_i(l);
-    
-    return 0;
-}
+Liste trierMusicParAnnee(Liste l);
