@@ -5,8 +5,8 @@ OLD git : https://github.com/josh-bgd/MiniProjet
 # Description du projet
 - Ajout de certaines règles au jeu du Snake, un jeu que j'apprécie énormément.
 # Quelles modifications ?
-- Ajout d'un "BadFruit" de couleur rouge qui retrécit la taille du serpent de "1" si celle-ci est supérieure à 1 sinon Game Over : le Bad fruit peut s'avérer utile mais peut s'avérer être vicieux. 
-- Ajout d'un "shrinkFruit" de couleur jaune permettant au joueur d'augmenter considérablement son score en contrepartie d'un retrait de case tous les "4 pas"
+- Ajout d'un "BadFruit" de couleur rouge qui retrécit la taille du serpent de "1" si celle-ci est supérieure à 1 sinon Game Over : le Bad fruit peut s'avérer utile mais peut s'avérer être vicieux mais permet de gagner un nombre de point supérieur à celui du fruit (30 fois la taille du snake). 
+- Ajout d'un "shrinkFruit" de couleur jaune permettant au joueur d'augmenter considérablement son score en contrepartie d'un retrait de case tous les "4 pas" (800 fois la taille du snake)
 - Changement primaires comme certaines couleurs, pour moderniser le jeu
 - possiblement une musique de fond
 # Comment compiler
