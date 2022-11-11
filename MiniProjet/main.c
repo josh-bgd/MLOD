@@ -61,13 +61,19 @@ typedef struct ShrinkFood {
 //------------------------------------------------------------------------------------
 // Global Variables Declaration
 //------------------------------------------------------------------------------------
+
 static const int screenWidth = 800;
 static const int screenHeight = 450;
 
+static const int gridWidth = screenWidth - 150;
+static const int gridHeight = 450;
+
 static int framesCounter = 0;
-static bool gameOver = false;
-static bool pause = false;
-static bool shrink = false;
+static bool gameOver;
+static bool pause;
+static bool shrink;
+int score;
+int hiscore;
 
 static Food fruit = { 0 };
 static BadFood badFruit = { 0 };
@@ -77,6 +83,7 @@ static Vector2 snakePosition[SNAKE_LENGTH] = { 0 };
 static bool allowMove = false;
 static Vector2 offset = { 0 };
 static int counterTail = 0;
+static Music snakeMusic; 
 
 //------------------------------------------------------------------------------------
 // Module Functions Declaration (local)
@@ -94,7 +101,7 @@ int main(void)
 {
     // Initialization (Note windowTitle is unused on Android)
     //---------------------------------------------------------
-    InitWindow(screenWidth, screenHeight, "classic game: snake");
+    InitWindow(screenWidth, screenHeight, "Mini Projet MLOD: snake");
 
     InitGame();
 
@@ -130,16 +137,18 @@ int main(void)
 // Initialize game variables
 void InitGame(void)
 {
+    
     framesCounter = 0;
     gameOver = false;
     pause = false;
     shrink = false;
+    score = 0;
 
     counterTail = 1;
     allowMove = false;
 
-    offset.x = screenWidth%SQUARE_SIZE;
-    offset.y = screenHeight%SQUARE_SIZE;
+    offset.x = gridWidth%SQUARE_SIZE;
+    offset.y = gridHeight%SQUARE_SIZE;
 
     for (int i = 0; i < SNAKE_LENGTH; i++)
     {
@@ -171,6 +180,7 @@ void InitGame(void)
     shrinkFruit.size = (Vector2){ SQUARE_SIZE, SQUARE_SIZE };
     shrinkFruit.color = YELLOW;
     shrinkFruit.active = false;
+    
 }
 
 // Update game (one frame)
@@ -224,13 +234,13 @@ void UpdateGame(void)
 
 
             // Wall behaviour
-            if ((snake[0].position.x) > (screenWidth - offset.x))
+            if ((snake[0].position.x) > (gridWidth - offset.x))
             {
                 snake[0].position.x = offset.x/2;
             }
                 
             else if
-                ((snake[0].position.y) > (screenHeight - offset.y)) 
+                ((snake[0].position.y) > (gridHeight - offset.y)) 
                 {
                    snake[0].position.y = offset.y/2; 
                 }
@@ -238,34 +248,40 @@ void UpdateGame(void)
             else if
                 (snake[0].position.x < 0) 
                 {
-                snake[0].position.x = screenWidth - offset.x/2 - SQUARE_SIZE; 
+                snake[0].position.x = gridWidth - offset.x/2 - SQUARE_SIZE; 
                 }
             
             else if
                 (snake[0].position.y < 0) 
                 {
-                   snake[0].position.y = screenHeight - offset.y/2 - SQUARE_SIZE; 
+                   snake[0].position.y = gridHeight - offset.y/2 - SQUARE_SIZE; 
                 }
               
 
             // Collision with yourself
             for (int i = 1; i < counterTail; i++)
             {
-                if ((snake[0].position.x == snake[i].position.x) && (snake[0].position.y == snake[i].position.y)) gameOver = true;
-            }
+                if ((snake[0].position.x == snake[i].position.x) && (snake[0].position.y == snake[i].position.y))
+                {
+                    if (score > hiscore){
+                    hiscore = score;
+                    }
+                    gameOver = true;
+                }
+            }       
            
            
                 // Fruit position calculation
             if (!fruit.active)
             {
                 fruit.active = true;
-                fruit.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
+                fruit.position = (Vector2){ GetRandomValue(0, (gridWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (gridHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
 
                 for (int i = 0; i < counterTail; i++)
                 {
                     while ((fruit.position.x == snake[i].position.x) && (fruit.position.y == snake[i].position.y))
                     {
-                        fruit.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
+                        fruit.position = (Vector2){ GetRandomValue(0, (gridWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (gridHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
                         i = 0;
                     }
                 }
@@ -276,13 +292,13 @@ void UpdateGame(void)
             if (!badFruit.active)
             {
                 badFruit.active = true;
-                badFruit.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
+                badFruit.position = (Vector2){ GetRandomValue(0, (gridWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (gridHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
 
                 for (int i = 0; i < counterTail; i++)
                 {
                     while ((badFruit.position.x == snake[i].position.x) && (badFruit.position.y == snake[i].position.y))
                     {
-                        badFruit.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
+                        badFruit.position = (Vector2){ GetRandomValue(0, (gridWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (gridHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
                         i = 0;
                     }
                 }
@@ -293,13 +309,13 @@ void UpdateGame(void)
             if (!shrinkFruit.active)
             {
                 shrinkFruit.active = true;
-                shrinkFruit.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
+                shrinkFruit.position = (Vector2){ GetRandomValue(0, (gridWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (gridHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
 
                 for (int i = 0; i < counterTail; i++)
                 {
                     while ((shrinkFruit.position.x == snake[i].position.x) && (shrinkFruit.position.y == snake[i].position.y))
                     {
-                        shrinkFruit.position = (Vector2){ GetRandomValue(0, (screenWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (screenHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
+                        shrinkFruit.position = (Vector2){ GetRandomValue(0, (gridWidth/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.x/2, GetRandomValue(0, (gridHeight/SQUARE_SIZE) - 1)*SQUARE_SIZE + offset.y/2 };
                         i = 0;
                     }
                 }
@@ -313,6 +329,7 @@ void UpdateGame(void)
             {
                 snake[counterTail].position = snakePosition[counterTail - 1];
                 counterTail += 1;
+                score += counterTail*15;
                 shrink= false;
                 fruit.active = false;
             }
@@ -326,9 +343,13 @@ void UpdateGame(void)
                 snake[counterTail].position = snakePosition[counterTail - 1];
                 if(counterTail>1) 
                 {
+                    score += counterTail*30;
                     counterTail -= 1;
                 }
                 else {
+                    if (score > hiscore){
+                    hiscore = score;
+                    }
                     gameOver = true;
                 }
                 badFruit.active = false;
@@ -348,9 +369,13 @@ void UpdateGame(void)
         {
             if(counterTail>1) 
                 {
-                    counterTail -= 1;
+                    score += counterTail*800;
+                    counterTail -= 1; 
                 }
                 else {
+                    if (score > hiscore){
+                    hiscore = score;
+                    }
                     gameOver = true;
                 }
         }
@@ -379,14 +404,14 @@ void DrawGame(void)
         if (!gameOver)
         {
             // Draw grid lines
-            for (int i = 0; i < screenWidth/SQUARE_SIZE + 1; i++)
+            for (int i = 0; i < gridWidth/SQUARE_SIZE + 1; i++)
             {
-                DrawLineV((Vector2){SQUARE_SIZE*i + offset.x/2, offset.y/2}, (Vector2){SQUARE_SIZE*i + offset.x/2, screenHeight - offset.y/2}, LIGHTGRAY);
+                DrawLineV((Vector2){SQUARE_SIZE*i + offset.x/2, offset.y/2}, (Vector2){SQUARE_SIZE*i + offset.x/2, gridHeight - offset.y/2}, LIGHTGRAY);
             }
 
-            for (int i = 0; i < screenHeight/SQUARE_SIZE + 1; i++)
+            for (int i = 0; i < gridHeight/SQUARE_SIZE + 1; i++)
             {
-                DrawLineV((Vector2){offset.x/2, SQUARE_SIZE*i + offset.y/2}, (Vector2){screenWidth - offset.x/2, SQUARE_SIZE*i + offset.y/2}, LIGHTGRAY);
+                DrawLineV((Vector2){offset.x/2, SQUARE_SIZE*i + offset.y/2}, (Vector2){gridWidth - offset.x/2, SQUARE_SIZE*i + offset.y/2}, LIGHTGRAY);
             }
 
             // Draw snake
@@ -401,12 +426,20 @@ void DrawGame(void)
             // Dessiner un shrinkFruit
             DrawRectangleV(shrinkFruit.position, shrinkFruit.size
             , shrinkFruit.color);
-
+            
+            DrawText(TextFormat("Score: %07i", score), 651, 80, 18, RED);
+            
+            DrawText(TextFormat("HiScore: %07i", hiscore), 651, 120, 18, GREEN);
+        
 
             if (pause) DrawText("GAME PAUSED", screenWidth/2 - MeasureText("GAME PAUSED", 40)/2, screenHeight/2 - 40, 40, GRAY);
         }
-        else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth()/2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20)/2, GetScreenHeight()/2 - 50, 20, GRAY);
-
+        else { 
+            DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth()/2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20)/2, GetScreenHeight()/2 - 50, 20, GRAY);
+            DrawText(TextFormat("Score: %07i", score), 330, 80, 20, RED);
+            DrawText(TextFormat("HiScore: %07i", hiscore), 320
+            , 120, 20, GREEN);
+        }
     EndDrawing();
 }
 
