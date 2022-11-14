@@ -20,7 +20,7 @@ j'ouvre le dossier raylib, dans le raylib.h j'ouvre mon fichier ".c" puis une fo
 screenshot(s) du jeu
 Les règles sont celle du jeu snake, être le plus long serpent sans toucher les bords du plateau ou encore toucher son propre corps
 # URL vidéo de démo
-https://youtu.be/P_FfwQ9Kxrw
+https://youtu.be/vG4Lr-RwK7Y
 # Quelques détails sur votre implémentation
  - Un snake est une structure composée d'une position, d'une vitesse de mouvement, d'une couleur et d'une taille.
  - Un fruit est une structure composée d'une couleur, d'une taille, d'une position, et d'un bouléen de présence ou non sur la carte.
