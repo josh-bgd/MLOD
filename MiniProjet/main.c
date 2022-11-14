@@ -1,4 +1,4 @@
-/*******************************************************************************************
+/*********************************************************************************************
 *
 *   raylib - classic game: snake
 *
@@ -22,6 +22,7 @@
 //----------------------------------------------------------------------------------
 #define SNAKE_LENGTH   256
 #define SQUARE_SIZE     31
+#define MAX_INPUT_CHARS     5
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -74,6 +75,10 @@ static bool pause;
 static bool shrink;
 int score;
 int hiscore;
+char name[MAX_INPUT_CHARS + 1] = "\0"; 
+Rectangle textBox1 = { screenWidth/2.0f - 100, 180, 225, 50 };
+Rectangle textBox2 = { 300, 300, 300, 300 };
+Rectangle textBox3 = { 450, 300, 300, 380};
 
 static Food fruit = { 0 };
 static BadFood badFruit = { 0 };
@@ -83,7 +88,11 @@ static Vector2 snakePosition[SNAKE_LENGTH] = { 0 };
 static bool allowMove = false;
 static Vector2 offset = { 0 };
 static int counterTail = 0;
-static Music snakeMusic; 
+static bool pseudoEntered;
+int letterCount = 0;
+bool mouseOnText = false;
+bool samePlayer = true;
+
 
 //------------------------------------------------------------------------------------
 // Module Functions Declaration (local)
@@ -143,6 +152,11 @@ void InitGame(void)
     pause = false;
     shrink = false;
     score = 0;
+    if (!samePlayer)
+    {
+        pseudoEntered = false;
+        name[MAX_INPUT_CHARS + 1] = "\0"; 
+    }
 
     counterTail = 1;
     allowMove = false;
@@ -186,7 +200,7 @@ void InitGame(void)
 // Update game (one frame)
 void UpdateGame(void)
 {
-    if (!gameOver)
+    if (!gameOver && pseudoEntered)
     {
         if (IsKeyPressed('P')) pause = !pause;
 
@@ -384,12 +398,63 @@ void UpdateGame(void)
         
         }
     }
-    else
+    else if (!gameOver && !pseudoEntered)
+    {
+         if (CheckCollisionPointRec(GetMousePosition(), textBox1)) mouseOnText = true;
+        else mouseOnText = false;
+
+            // Set the window's cursor to the I-Beam
+            SetMouseCursor(MOUSE_CURSOR_IBEAM);
+
+            // Get char pressed (unicode character) on the queue
+            int key = GetCharPressed();
+
+            // Check if more characters have been pressed on the same frame
+            while (key > 0)
+            {
+                // NOTE: Only allow keys in range [32..125]
+                if ((key >= 32) && (key <= 125) && (letterCount < MAX_INPUT_CHARS))
+                {
+                    name[letterCount] = (char)key;
+                    name[letterCount+1] = '\0'; // Add null terminator at the end of the string.
+                    letterCount++;
+                    pseudoEntered = false;
+                }
+
+                key = GetCharPressed();  // Check next character in the queue
+            }
+
+            if (IsKeyPressed(KEY_BACKSPACE))
+            {
+                letterCount--;
+                if (letterCount < 0) letterCount = 0;
+                name[letterCount] = '\0';
+                pseudoEntered = false;
+            }
+            
+            if (IsKeyPressed(KEY_ENTER))
+            {
+                pseudoEntered = true;
+            } 
+            framesCounter++;
+    }
+    
+    else if (gameOver && pseudoEntered)
     {
         if (IsKeyPressed(KEY_ENTER))
         {
             InitGame();
             gameOver = false;
+        }
+        
+        if (IsKeyPressed(KEY_RIGHT))
+        {
+            samePlayer = false;
+        }
+        
+        if (IsKeyPressed(KEY_LEFT))
+        {
+            samePlayer = true;
         }
     }    
 }
@@ -401,7 +466,7 @@ void DrawGame(void)
 
         ClearBackground(BLACK);
 
-        if (!gameOver)
+        if (!gameOver && pseudoEntered)
         {
             // Draw grid lines
             for (int i = 0; i < gridWidth/SQUARE_SIZE + 1; i++)
@@ -427,19 +492,58 @@ void DrawGame(void)
             DrawRectangleV(shrinkFruit.position, shrinkFruit.size
             , shrinkFruit.color);
             
-            DrawText(TextFormat("Score: %07i", score), 651, 80, 18, RED);
+            DrawText(TextFormat("Score: %07i", score), 651, 80, 18, WHITE);
             
-            DrawText(TextFormat("HiScore: %07i", hiscore), 651, 120, 18, GREEN);
+            DrawText(TextFormat("HiScore: %07i", hiscore), 651, 120, 18, YELLOW);
+            
+            DrawText(TextFormat("Pseudo: %s", name), 651, 160, 20, BLUE);
         
 
             if (pause) DrawText("GAME PAUSED", screenWidth/2 - MeasureText("GAME PAUSED", 40)/2, screenHeight/2 - 40, 40, GRAY);
         }
-        else { 
-            DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth()/2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20)/2, GetScreenHeight()/2 - 50, 20, GRAY);
-            DrawText(TextFormat("Score: %07i", score), 330, 80, 20, RED);
-            DrawText(TextFormat("HiScore: %07i", hiscore), 320
-            , 120, 20, GREEN);
+        
+        else if (!gameOver && !pseudoEntered)
+        {
+            DrawText("WRITE YOUR PSEUDO", 240, 140, 20, BLACK);
+
+            DrawRectangleRec(textBox1, BLACK);
+            if (mouseOnText) DrawRectangleLines((int)textBox1.x, (int)textBox1.y, (int)textBox1.width, (int)textBox1.height, RED);
+            else DrawRectangleLines((int)textBox1.x, (int)textBox1.y, (int)textBox1.width, (int)textBox1.height, WHITE);
+
+            DrawText(name, (int)textBox1.x + 5, (int)textBox1.y + 8, 40, RED);
+
+            DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, MAX_INPUT_CHARS), 315, 250, 20, WHITE);
+
+            if (mouseOnText)
+            {
+                if (letterCount < MAX_INPUT_CHARS)
+                {
+                    // Draw blinking underscore char
+                    if (((framesCounter/20)%2) == 0) DrawText("_", (int)textBox1.x + 8 + MeasureText(name, 40), (int)textBox1.y + 12, 40, RED);
+                }
+                else DrawText("Press BACKSPACE to delete chars...", 230, 300, 20, BLUE);
+            }
         }
+        
+        else if (gameOver && pseudoEntered) 
+        { 
+            DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth()/2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20)/2, GetScreenHeight()/2 - 50, 20, GRAY);
+            DrawText(TextFormat("Score: %07i", score), 330, 80, 20, WHITE);
+            DrawText(TextFormat("HiScore: %07i", hiscore), 320
+            , 120, 20, YELLOW);
+            DrawText(TextFormat("same Player?"), 340, 240, 20, BLUE);
+            if(samePlayer) 
+            {
+               DrawRectangleRec(textBox2, BLACK);
+               DrawText("YES", (int)textBox2.x + 5, (int)textBox2.y + 8, 40, RED);
+            }
+            else 
+            {
+                DrawRectangleRec(textBox3, BLACK);
+                DrawText("NO", (int)textBox3.x + 5, (int)textBox3.y + 8, 40, RED);
+            }
+        }
+        
     EndDrawing();
 }
 
@@ -454,4 +558,14 @@ void UpdateDrawFrame(void)
 {
     UpdateGame();
     DrawGame();
+}
+
+bool IsAnyKeyPressed()
+{
+    bool keyPressed = false;
+    int key = GetKeyPressed();
+
+    if ((key >= 32) && (key <= 126)) keyPressed = true;
+
+    return keyPressed;
 }
