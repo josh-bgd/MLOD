@@ -76,7 +76,7 @@ static bool shrink;
 int score;
 int hiscore;
 char name[MAX_INPUT_CHARS + 1] = "\0"; 
-Rectangle textBox1 = { screenWidth/2.0f - 100, 180, 225, 50 };
+Rectangle textBox1 = { screenWidth/2.0f - 60, 180, 140, 50 };
 Rectangle textBox2 = { 300, 300, 300, 300 };
 Rectangle textBox3 = { 450, 300, 300, 380};
 
@@ -432,10 +432,13 @@ void UpdateGame(void)
                 pseudoEntered = false;
             }
             
-            if (IsKeyPressed(KEY_ENTER))
-            {
-                pseudoEntered = true;
-            } 
+            if (name[0]!='\0' || name[0]!=" "){
+                
+                if (IsKeyPressed(KEY_ENTER))
+                {
+                    pseudoEntered = true;
+                }
+            }
             framesCounter++;
     }
     
@@ -514,15 +517,17 @@ void DrawGame(void)
 
             DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, MAX_INPUT_CHARS), 315, 250, 20, WHITE);
 
-            if (mouseOnText)
-            {
+            
                 if (letterCount < MAX_INPUT_CHARS)
                 {
                     // Draw blinking underscore char
                     if (((framesCounter/20)%2) == 0) DrawText("_", (int)textBox1.x + 8 + MeasureText(name, 40), (int)textBox1.y + 12, 40, RED);
                 }
-                else DrawText("Press BACKSPACE to delete chars...", 230, 300, 20, BLUE);
-            }
+                else 
+                {
+                    DrawText("Press BACKSPACE to delete chars...", 230, 300, 20, BLUE);
+                    DrawText("Or press ENTER to start playing...", 230, 340, 20, BLUE);
+                }
         }
         
         else if (gameOver && pseudoEntered) 
