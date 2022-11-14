@@ -21,6 +21,8 @@ screenshot(s) du jeu
 Les règles sont celle du jeu snake, être le plus long serpent sans toucher les bords du plateau ou encore toucher son propre corps
 # URL vidéo de démo
 # Quelques détails sur votre implémentation
-quel(s) fichier(s), structures de données, algorithme, ...
+ - Un snake est une structure composée d'une position, d'une vitesse de mouvement, d'une couleur et d'une taille.
+ - Un fruit est une structure composée d'une couleur, d'une taille, d'une position, et d'un bouléen de présence ou non sur la carte.
+ - Les deux structures permettent de créer des objets sur la carte (grille) et de faire déplacer le snake à l'aide des touches flèches du clavier.
 # Extensions / améliorations possibles
 — Faire une vidéo (un teaser) entre 3 min et 5 mi
