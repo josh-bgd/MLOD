@@ -13,7 +13,7 @@ OLD git : https://github.com/josh-bgd/MiniProjet
 - Changement primaires comme certaines couleurs, pour moderniser le jeu
 - possiblement une musique de fond
 # Comment compiler
-je compile sur NotePad++
+je compile sur NotePad++ de WINDOWS (j'ai installé BOOTCAMP sur mon mac afin de passer en Windows du à des soucis d'installation de raylib dessus)
 # Comment exécuter
 j'ouvre le dossier raylib, dans le raylib.h j'ouvre mon fichier ".c" puis une fois le code écris : F6, une fenêtre de Bash apparait puis "Ok" et le jeu se lance 
 # Comment utiliser le projet
